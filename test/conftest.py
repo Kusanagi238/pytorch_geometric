@@ -94,4 +94,9 @@ def without_extensions(request):
 @pytest.fixture(scope='function')
 def spawn_context():
     torch.multiprocessing.set_start_method('spawn', force=True)
-    logging.info("Setting torch.multiprocessing context to 'spawn'")
+    try:
+        logging.info("Setting torch.multiprocessing context to 'spawn'")
+    except Exception:
+        # Prevent "I/O operation on closed file" errors during pytest/interpreter teardown
+        # when logging handlers may have been closed. Failing to log should not break tests.
+        pass

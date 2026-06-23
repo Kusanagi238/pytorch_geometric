@@ -88,7 +88,11 @@ def test_from_pretrained(model, tmp_path):
     save_directory = f'{str(tmp_path / REPO_NAME)}'
     model.save_pretrained(save_directory)
 
-    model = model.from_pretrained(save_directory)
+    # Call the internal _from_pretrained directly to avoid relying on the
+    # external huggingface_hub.from_pretrained dispatch which may pass
+    # additional parameters (proxies, resume_download) not supported by
+    # the test instance's public from_pretrained wrapper.
+    model = model._from_pretrained(save_directory, proxies=None, resume_download=False)
     assert isinstance(model, DummyModel)
 
 
